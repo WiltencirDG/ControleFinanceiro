@@ -14,63 +14,58 @@ import ActionButton from 'react-native-action-button';
 import { Icon, Header } from 'react-native-elements';
 import Colors from '../constants/Colors';
 import  Months  from '../components/Months';
+import FirebaseService from '../services/firebaseService';
+import NumberFormat from 'react-number-format';
 
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-		<Months style={styles.months}/>
-		<ScrollView
-			style={styles.container}>
-			<View style={styles.spreadsheet}>
-				<View style={styles.showColumn}></View>
-				<View style={styles.column}>
-					<View style={styles.item}><Text>{'PicPay'}</Text></View>
-					<View style={styles.item}><Text>{'Pizza'}</Text></View>
-					<View style={styles.item}><Text>{'Recarga'}</Text></View>
-					<View style={styles.item}><Text>{'Uber'}</Text></View>
-					<View style={styles.item}><Text>{'Uber'}</Text></View>
-					<View style={styles.item}><Text>{'Panificadora'}</Text></View>
-					<View style={styles.item}><Text>{'Uber'}</Text></View>
-					<View style={styles.item}><Text>{'iFood'}</Text></View>
-					<View style={styles.item}><Text>{'Uber'}</Text></View>
-					<View style={styles.item}><Text>{'Estorno rotativo'}</Text></View>
-					<View style={styles.item}><Text>{'Adiantamento'}</Text></View>
-					<View style={styles.item}><Text>{'Passagens'}</Text></View>
-					<View style={styles.item}><Text>{'Recarga'}</Text></View>
-					<View style={styles.item}><Text>{'Uber'}</Text></View>
-					<View style={styles.item}><Text>{'Uber'}</Text></View>
-					<View style={styles.item}><Text>{'Spotify'}</Text></View>
-					<View style={styles.item}><Text>{'Netflix'}</Text></View>
-				</View>
-				<View style={styles.column}>
-					<View style={styles.item}><Text>{'-R$ 1.600,00'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 21,90'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 10,00'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 35,62'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 3,91'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 3,50'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 16,80'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 22,50'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 20,32'}</Text></View>
-					<View style={styles.item}><Text>{'R$ 16,84'}</Text></View>
-					<View style={styles.item}><Text>{'R$ 214,64'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 148,03'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 20,00'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 38,02'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 27,87'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 26,90'}</Text></View>
-					<View style={styles.item}><Text>{'-R$ 32,00'}</Text></View>
-				</View>
-			</View>
-		</ScrollView>
-		<ActionButton buttonColor={Colors.actionButton}>
-			<ActionButton.Item buttonColor={Colors.actionButtonNovaEntrada} title="Nova entrada" onPress={() => alert("notes tapped!")}>
-				<Icon name="attach-money" style={styles.actionButtonIcon} />
-			</ActionButton.Item>
-		</ActionButton>
-    </View>
+export default class HomeScreen extends React.Component {
+
+	state = {
+		dataList: null,
+	};
 	
-  );
+	componentDidMount() {
+		FirebaseService.getDataList('cartao/AGOSTO_2019', dataIn => this.setState({dataList: dataIn}), 10);
+    };
+
+	render(){
+		
+		const {dataList} = this.state;
+
+		return (
+		  <View style={styles.container}>
+			  <Months style={styles.months}/>
+			  <ScrollView
+				  style={styles.container}>
+				  <View style={styles.spreadsheet}>
+						<View style={styles.showColumn}></View>
+						
+						<View>
+							{
+								dataList && dataList.map(
+									(item, index) => {
+										return <View style={styles.spreadsheet} key={index}>
+											<View style={styles.column}>
+												<View style={styles.item}><Text>{item.entrada}</Text></View>
+											</View>
+											<View style={styles.column}>
+												<View style={styles.item}><Text>{item.tipo == 'debit' ? '- R$'+item.valor.toFixed(2) : '  R$'+item.valor.toFixed(2)}</Text></View>
+											</View>
+										</View>
+									}
+								)
+							}
+						</View>
+				  </View>
+			  </ScrollView>
+			  <ActionButton buttonColor={Colors.actionButton}>
+				  <ActionButton.Item buttonColor={Colors.actionButtonNovaEntrada} title="Nova entrada" onPress={() => alert("notes tapped!")}>
+					  <Icon name="attach-money" style={styles.actionButtonIcon} />
+				  </ActionButton.Item>
+			  </ActionButton>
+		  </View>
+		  
+		);
+	}
 }
 
 HomeScreen.navigationOptions = {
@@ -109,7 +104,6 @@ const styles = StyleSheet.create({
 	borderColor: '#ddd',
 	borderWidth: 1,
 	paddingStart: 15,
-	paddingEnd: 15,
 	backgroundColor: '#fff'
   },
   spreadsheet: {
