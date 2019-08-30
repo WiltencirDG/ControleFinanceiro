@@ -3,22 +3,22 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
+import BankScreen from '../screens/BankScreen';
+import CardScreen from '../screens/CardScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
   default: {},
 });
 
-const HomeStack = createStackNavigator(
+const CardStack = createStackNavigator(
   {
-    Home: HomeScreen,
+    Home: CardScreen,
   },
   config
 );
 
-HomeStack.navigationOptions = {
+CardStack.navigationOptions = {
   tabBarLabel: 'Cartão',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
@@ -32,28 +32,28 @@ HomeStack.navigationOptions = {
   ),
 };
 
-HomeStack.path = '';
+CardStack.path = '';
 
-const LinksStack = createStackNavigator(
+const BankStack = createStackNavigator(
   {
-    Links: LinksScreen,
+    Links: BankScreen,
   },
   config
 );
 
-LinksStack.navigationOptions = {
+BankStack.navigationOptions = {
   tabBarLabel: 'Banco',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-cash' : 'md-cash'} />
   ),
 };
 
-LinksStack.path = '';
+BankStack.path = '';
 
 
 const tabNavigator = createBottomTabNavigator({
-  HomeStack,
-  LinksStack,
+  CardStack,
+  BankStack,
 });
 
 tabNavigator.path = '';

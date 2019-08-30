@@ -1,30 +1,25 @@
-import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import {
-  Image,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
 import ActionButton from 'react-native-action-button';
 import { Icon, Header } from 'react-native-elements';
 import Colors from '../constants/Colors';
-import  Months  from '../components/Months';
+import Months from '../components/Months';
 import FirebaseService from '../services/firebaseService';
-import NumberFormat from 'react-number-format';
 
-export default class HomeScreen extends React.Component {
+export default class BankScreen extends React.Component {
 
 	state = {
 		dataList: null,
 	};
 	
 	componentDidMount() {
-		FirebaseService.getDataList('cartao/AGOSTO_2019', dataIn => this.setState({dataList: dataIn}), 10);
+		FirebaseService.getData('cartao/AGOSTO_2019', dataIn => this.setState({dataList: dataIn}), 10);
     };
 
 	render(){
@@ -39,7 +34,7 @@ export default class HomeScreen extends React.Component {
 				  <View style={styles.spreadsheet}>
 						<View style={styles.showColumn}></View>
 						
-						<View>
+						<View >
 							{
 								dataList && dataList.map(
 									(item, index) => {
@@ -68,7 +63,7 @@ export default class HomeScreen extends React.Component {
 	}
 }
 
-HomeScreen.navigationOptions = {
+BankScreen.navigationOptions = {
 	header: myHeader
 };
 

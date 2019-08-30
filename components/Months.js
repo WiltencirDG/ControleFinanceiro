@@ -6,10 +6,18 @@ import Colors from '../constants/Colors';
 
 
 export default function Months(){
+    
+    actualMonth = 'AGOSTO';
+    actualYear = 2019;
+
+    state = {
+        month: actualMonth,
+        year: actualYear,
+    };
     return (
         <View style={styles.months}>
             <Icon name="arrow-back" style={styles.buttons} />
-            <Text>{'AGOSTO'}</Text>
+            <Text>{state.month}</Text>
             <Icon name="arrow-forward" style={styles.buttons} />
         </View>
     );
