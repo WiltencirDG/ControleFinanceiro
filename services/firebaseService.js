@@ -3,27 +3,27 @@ import {firebaseDatabase} from '../utils/firebase'
 
 
 export default class FirebaseService {
-    static getData = (nodePath, callback, size = 10) => {
+    static getData = (nodePath, callback) => {
 
-        let query = firebaseDatabase.ref(nodePath).limitToLast(size);
+        let query = firebaseDatabase.ref(nodePath);
         console.log(query);
         let items = [];
-        query.once("value")
-            .then(function(snapshot) {
-                snapshot.forEach(function(childSnapshot) {
-                
-                var key = childSnapshot.key;                
-                var childData = childSnapshot.val();
-
-                items.push(childData);
-            });
-            callback(items);
+        query.on("value", snapshot => {
+            items = [];
+            snapshot.forEach(function(childSnapshot) {
+            
+            var key = childSnapshot.key;                
+            var childData = childSnapshot.val();
+    
+            items.push(childData);
+        })
+        callback(items);
         return query;
         });
     }
 
     static writeData(path,entrada,valor,tipo){
-        firebase.database().ref(path).set({
+        firebaseDatabase.ref(path).push({
             entrada,
             valor,
             tipo
