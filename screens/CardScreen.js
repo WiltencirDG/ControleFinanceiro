@@ -11,18 +11,23 @@ import ActionButton from 'react-native-action-button';
 import { Icon, Header, Input } from 'react-native-elements';
 import Colors from '../constants/Colors';
 import Months from '../components/Months';
-import Form from '../components/Form';
 import FirebaseService from '../services/firebaseService';
 import Modal from "react-native-modal";
-import { TextInput } from 'react-native';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Fumi } from 'react-native-textinput-effects';
 
 export default class CardScreen extends React.Component {
 	
-	fields = [{name:'Descrição','campo':'entrada'},{name:'Valor','campo':'valor'}, {name:'Tipo','campo':'tipo'}];
+	fields = [{name:'Descrição','icon':'align-justify','campo':'entrada'},
+			  {name:'Valor','icon':'money','campo':'valor'}, 
+			  {name:'Tipo','icon':'tag','campo':'tipo'}];
 
 	state = {
 		dataList: null,
-		isVisible: false
+		isVisible: false,
+		entrada: '',
+		valor: 0,
+		tipo: ''
 	};
 	
 	componentDidMount() {
@@ -30,17 +35,18 @@ export default class CardScreen extends React.Component {
 	};
 
 	getData = () => {
-		FirebaseService.getData('cartao/AGOSTO_2019', dataIn => this.setState({dataList: dataIn}), 10);
+		FirebaseService.getData('cartao/AGOSTO_2019', dataIn => this.setState({dataList: dataIn}));
 	}
+
 	toggleModal = () => {
 		this.setState({ isModalVisible: !this.state.isModalVisible });
 	};
 
 	createEntrada = () => {
 		
-		FirebaseService.writeData('cartao/AGOSTO_2019',this.descricao,this.valor,this.tipo);
+		FirebaseService.writeData('cartao/AGOSTO_2019',this.state.entrada,parseFloat(this.state.valor),this.state.tipo);
 		this.toggleModal();
-	}
+	};
 
 	render(){
 		
@@ -60,7 +66,7 @@ export default class CardScreen extends React.Component {
 								(item, index) => {
 									return <View style={styles.spreadsheet} key={index}>
 										<View style={styles.column}>
-											<View style={styles.item}><Text>{item.entrada + index}</Text></View>
+											<View style={styles.item}><Text>{item.entrada}</Text></View>
 										</View>
 										<View style={styles.column}>
 											<View style={styles.item}><Text>{item.tipo == 'debit' ? '- R$'+item.valor.toFixed(2) : '  R$'+item.valor.toFixed(2)}</Text></View>
@@ -84,8 +90,20 @@ export default class CardScreen extends React.Component {
 				onBackdropPress={this.toggleModal}
 				style={styles.containerModal}>
 
-				<View style={{flex:1}}>
-					<Form fields={this.fields}/>
+				<View>
+					<View style={styles.modal}>
+						{
+							this.fields.map((item,index) => {
+								return <View key={index}>
+											<Fumi onChangeText={(text) => {this.setState({[item.campo]: text})}} label={item.name} iconClass={FontAwesomeIcon} iconName={item.icon} iconColor={Colors.tintColor} iconSize={20} iconWidth={40} inputPadding={16}/>
+										</View>
+							})
+						}
+						<View style={styles.modalGroupButtons}>
+							<Button onPress={this.toggleModal} title={'Cancelar'} style={styles.cancelarModal}/>
+							<Button onPress={this.createEntrada} title={'Confirmar'} style={styles.confirmarModal}/>
+						</View>
+					</View>
 				</View>
 			</Modal>
 		</View>
@@ -112,6 +130,10 @@ function myHeader(){
 }
 
 const styles = StyleSheet.create({
+  containerModal: {
+	padding:10,
+	margin:50,
+  },
   container: {
     flex: 1,
 	backgroundColor: Colors.background,
@@ -143,11 +165,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   modal: {
-	flex: 1,
-	flexDirection: 'column',
 	justifyContent: 'center',
-	alignItems: 'center',
-	width: 250,
 	backgroundColor: '#fff',
   },
   cancelarModal:{
@@ -158,8 +176,9 @@ const styles = StyleSheet.create({
   },
   modalGroupButtons :{
 	flexDirection: 'row',
-	flexWrap: 'wrap',
 	justifyContent: 'space-around',
-	
+	backgroundColor: '#fff',
+	paddingBottom: 15,
+	paddingTop: 15,
   }
 });
