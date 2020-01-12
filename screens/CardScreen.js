@@ -15,6 +15,7 @@ import FirebaseService from '../services/firebaseService';
 import Modal from "react-native-modal";
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
+import monthName from '../utils/util';
 
 export default class CardScreen extends React.Component {
 	
@@ -22,20 +23,22 @@ export default class CardScreen extends React.Component {
 			  {name:'Valor','icon':'money','campo':'valor'}, 
 			  {name:'Tipo','icon':'tag','campo':'tipo'}];
 
+			  
 	state = {
 		dataList: null,
 		isVisible: false,
 		entrada: '',
 		valor: 0,
-		tipo: ''
+		tipo: '',
+		date: new Date()
 	};
-	
+
 	componentDidMount() {
 		this.getData();
 	};
 
 	getData = () => {
-		FirebaseService.getData('cartao/AGOSTO_2019', dataIn => this.setState({dataList: dataIn}));
+		FirebaseService.getData('cartao/'+this.formatDate(), dataIn => this.setState({dataList: dataIn}));
 	}
 
 	toggleModal = () => {
@@ -44,9 +47,19 @@ export default class CardScreen extends React.Component {
 
 	createEntrada = () => {
 		
-		FirebaseService.writeData('cartao/AGOSTO_2019',this.state.entrada,parseFloat(this.state.valor),this.state.tipo);
+		FirebaseService.writeData('cartao/'+this.formatDate(),this.state.entrada,parseFloat(this.state.valor),this.state.tipo);
 		this.toggleModal();
 	};
+
+	callbackNewDate = (newDate) => {
+		console.log(newDate);
+		this.setState({date:newDate});
+		this.getData();
+	}
+	
+	formatDate(){
+		return monthName(this.state.date.getMonth() + 1) + '_' + this.state.date.getFullYear();
+	}
 
 	render(){
 		
@@ -54,7 +67,7 @@ export default class CardScreen extends React.Component {
 		
 		return (
 		<View style={styles.container}>
-			<Months style={styles.months}/>
+			<Months style={styles.months} callbackDate={this.callbackNewDate}/>
 			<ScrollView
 				style={styles.container}>
 				<View style={styles.spreadsheet}>

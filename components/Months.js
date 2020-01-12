@@ -3,24 +3,31 @@ import React from 'react'
 import { StyleSheet, Text, View, } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Colors from '../constants/Colors';
+import monthName from '../utils/util';
 
-
-export default function Months(){
+export default class Months extends React.Component {
     
-    actualMonth = 'AGOSTO';
-    actualYear = 2019;
-
     state = {
-        month: actualMonth,
-        year: actualYear,
+        date: new Date()
     };
-    return (
-        <View style={styles.months}>
-            <Icon name="arrow-back" style={styles.buttons} />
-            <Text>{state.month}</Text>
-            <Icon name="arrow-forward" style={styles.buttons} />
-        </View>
-    );
+
+    getMonth = () => {
+        return monthName(this.state.date.getMonth()+1);
+    };
+
+    getYear = () => {
+        return this.state.date.getFullYear();
+    };
+
+    render(){
+        return (
+            <View style={styles.months}>
+                <Icon name="arrow-back" style={styles.buttons} onPress={() => {let newDate = this.state.date; newDate.setMonth(newDate.getMonth()-1); this.setState({date: newDate}); this.props.callbackDate(newDate);}}/>
+                <Text>{this.getMonth() + ' ' + this.getYear()}</Text>
+                <Icon name="arrow-forward" style={styles.buttons} onPress={() => {let newDate = this.state.date; newDate.setMonth(newDate.getMonth()+1); this.setState({date: newDate}); this.props.callbackDate(newDate);}} />
+            </View>
+        )
+    } 
 }
 
 const styles = StyleSheet.create({
