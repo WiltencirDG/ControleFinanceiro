@@ -11,6 +11,8 @@ import ActionButton from 'react-native-action-button';
 import { Icon, Header, Input } from 'react-native-elements';
 import Colors from '../constants/Colors';
 import Months from '../components/Months';
+import EntryItem from '../components/EntryItem';
+import Form from '../components/Form';
 import FirebaseService from '../services/firebaseService';
 import Modal from "react-native-modal";
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -41,16 +43,6 @@ export default class CardScreen extends React.Component {
 		FirebaseService.getData('cartao/'+this.formatDate(), dataIn => this.setState({dataList: dataIn}));
 	}
 
-	toggleModal = () => {
-		this.setState({ isModalVisible: !this.state.isModalVisible });
-	};
-
-	createEntrada = () => {
-		
-		FirebaseService.writeData('cartao/'+this.formatDate(),this.state.entrada,parseFloat(this.state.valor),this.state.tipo);
-		this.toggleModal();
-	};
-
 	callbackNewDate = (newDate) => {
 		console.log(newDate);
 		this.setState({date:newDate});
@@ -60,7 +52,9 @@ export default class CardScreen extends React.Component {
 	formatDate(){
 		return monthName(this.state.date.getMonth() + 1) + '_' + this.state.date.getFullYear();
 	}
-
+	toggleModal = () => {
+		this.setState({ isModalVisible: !this.state.isModalVisible });
+	};
 	render(){
 		
 		const {dataList} = this.state;
@@ -76,15 +70,8 @@ export default class CardScreen extends React.Component {
 					<View >
 						{
 							dataList && dataList.map(
-								(item, index) => {
-									return <View style={styles.spreadsheet} key={index}>
-										<View style={styles.column}>
-											<View style={styles.item}><Text>{item.entrada}</Text></View>
-										</View>
-										<View style={styles.column}>
-											<View style={styles.item}><Text>{item.tipo == 'debit' ? '- R$'+item.valor.toFixed(2) : '  R$'+item.valor.toFixed(2)}</Text></View>
-										</View>
-									</View>
+								(item,index) => {
+									return <EntryItem propitem={item} index={index}/>
 								}
 							)
 						}
@@ -104,19 +91,8 @@ export default class CardScreen extends React.Component {
 				style={styles.containerModal}>
 
 				<View>
-					<View style={styles.modal}>
-						{
-							this.fields.map((item,index) => {
-								return <View key={index}>
-											<Fumi onChangeText={(text) => {this.setState({[item.campo]: text})}} label={item.name} iconClass={FontAwesomeIcon} iconName={item.icon} iconColor={Colors.tintColor} iconSize={20} iconWidth={40} inputPadding={16}/>
-										</View>
-							})
-						}
-						<View style={styles.modalGroupButtons}>
-							<Button onPress={this.toggleModal} title={'Cancelar'} style={styles.cancelarModal}/>
-							<Button onPress={this.createEntrada} title={'Confirmar'} style={styles.confirmarModal}/>
-						</View>
-					</View>
+
+					<Form fields={this.fields} toggle={this.toggleModal} date={this.state.date}/>
 				</View>
 			</Modal>
 		</View>
