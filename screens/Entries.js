@@ -19,18 +19,19 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
 import monthName from '../utils/util';
 
-export default class CardScreen extends React.Component {
+export default class Entries extends React.Component {
 	
 	fields = [{name:'Descrição','icon':'align-justify','campo':'entrada'},
-			  {name:'Valor','icon':'money','campo':'valor'}, 
-			  {name:'Tipo','icon':'tag','campo':'tipo'}];
+			  {name:'Valor','icon':'money','campo':'valor'}];
 
 			  
 	state = {
 		dataList: [],
 		isVisible: false,
 		item: null,
-		date: new Date()
+		type: '',
+		date: new Date(),
+		screen: this.props.navigation.state.routeName
 	};
 
 	componentDidMount() {
@@ -38,7 +39,7 @@ export default class CardScreen extends React.Component {
 	};
 
 	getData = () => {
-		FirebaseService.getData('cartao/'+this.formatDate(), dataIn => this.setState({dataList: dataIn}));
+		FirebaseService.getData(this.state.screen+'/'+this.formatDate(), dataIn => this.setState({dataList: dataIn}));
 	}
 
 	callbackNewDate = (newDate) => {
@@ -77,7 +78,10 @@ export default class CardScreen extends React.Component {
 				</View>
 			</ScrollView>
 			<ActionButton buttonColor={Colors.actionButton}>
-				<ActionButton.Item buttonColor={Colors.actionButtonNovaEntrada} title="Nova entrada" onPress={() => {this.setState({item: null});this.toggleModal();}}>
+				<ActionButton.Item buttonColor={Colors.actionButtonNovaEntrada} title="Nova entrada" onPress={() => {this.setState({item: null,type:'credit'});this.toggleModal();}}>
+					<Icon name="attach-money" style={styles.actionButtonIcon} />
+				</ActionButton.Item>
+				<ActionButton.Item buttonColor={Colors.actionButtonNovaSaida} title="Nova saída" onPress={() => {this.setState({item: null, type:'debit'});this.toggleModal();}}>
 					<Icon name="attach-money" style={styles.actionButtonIcon} />
 				</ActionButton.Item>
 			</ActionButton>
@@ -90,7 +94,7 @@ export default class CardScreen extends React.Component {
 
 				<View>
 
-					<Form item={this.state.item} fields={this.fields} toggle={this.toggleModal} date={this.state.date}/>
+					<Form item={this.state.item} tipo={this.state.type} fields={this.fields} toggle={this.toggleModal} date={this.state.date} tela={this.state.screen}/>
 				</View>
 			</Modal>
 		</View>
@@ -99,7 +103,7 @@ export default class CardScreen extends React.Component {
 	}
 }
 
-CardScreen.navigationOptions = {
+Entries.navigationOptions = {
 	header: myHeader
 };
 

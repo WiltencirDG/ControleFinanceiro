@@ -18,17 +18,19 @@ export default class Form extends Component{
     state = {
 		entrada: '',
 		valor: 0,
-		tipo: ''
+		tipo: this.props.tipo
 	};
 
 	doIt = () => {
         console.log('Form: doIt');
+        let tela = this.props.tela;
+        
         if(this.props.item == null){
             if(this.state.entrada != '' && this.state.tipo != ''){
-                FirebaseService.writeData('cartao/'+this.formatDate(),this.state.entrada,parseFloat(this.state.valor),this.state.tipo, false);
+                FirebaseService.writeData(tela+'/'+this.formatDate(),this.state.entrada,parseFloat(this.state.valor),this.state.tipo, false);
             }
         }else{
-            FirebaseService.writeData('cartao/'+this.formatDate()+'/'+this.props.item.id,this.state.entrada,parseFloat(this.state.valor),this.state.tipo, true);
+            FirebaseService.writeData(tela+'/'+this.formatDate()+'/'+this.props.item.id,this.state.entrada,parseFloat(this.state.valor),this.state.tipo, true);
         }
         this.props.toggle?.();
     };

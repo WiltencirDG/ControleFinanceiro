@@ -3,8 +3,7 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
-import BankScreen from '../screens/BankScreen';
-import CardScreen from '../screens/CardScreen';
+import Entries from '../screens/Entries';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -13,7 +12,7 @@ const config = Platform.select({
 
 const CardStack = createStackNavigator(
   {
-    Home: CardScreen,
+    cartao: Entries,
   },
   config
 );
@@ -36,7 +35,7 @@ CardStack.path = '';
 
 const BankStack = createStackNavigator(
   {
-    Links: BankScreen,
+    banco: Entries,
   },
   config
 );

@@ -6,7 +6,8 @@ export default {
   tabIconSelected: tintColor,
 
   actionButton: tintColor,
-  actionButtonNovaEntrada: '#ff1111',
+  actionButtonNovaEntrada: '#11aa11',
+  actionButtonNovaSaida: '#ff1111',
 
   background: '#eee',
   nubank: '#9900FF',
