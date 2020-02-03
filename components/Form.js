@@ -21,8 +21,15 @@ export default class Form extends Component{
 		tipo: ''
 	};
 
-	createEntrada = () => {
-		FirebaseService.writeData('cartao/'+this.formatDate(),this.state.entrada,parseFloat(this.state.valor),this.state.tipo);
+	doIt = () => {
+        console.log('Form: doIt');
+        if(this.props.item == null){
+            if(this.state.entrada != '' && this.state.tipo != ''){
+                FirebaseService.writeData('cartao/'+this.formatDate(),this.state.entrada,parseFloat(this.state.valor),this.state.tipo, false);
+            }
+        }else{
+            FirebaseService.writeData('cartao/'+this.formatDate()+'/'+this.props.item.id,this.state.entrada,parseFloat(this.state.valor),this.state.tipo, true);
+        }
         this.props.toggle?.();
     };
     
@@ -30,21 +37,28 @@ export default class Form extends Component{
 		return monthName(this.props.date.getMonth() + 1) + '_' + this.props.date.getFullYear();
 	}
 
+    componentDidMount(){
+        console.log('Form: didMount: prop.item-> '+this.props.item);
+        if(this.props.item != null){
+            this.setState({entrada: this.props.item.entrada, valor: this.props.item.valor, tipo: this.props.item.tipo});
+        }
+    }
+
     render(){
-        console.log(JSON.stringify(this.props.fields));
         const fields = this.props.fields;
         return (
             <View style={styles.form}>
                 {
                     fields.map((item,index) => {
                         return <View key={index}>
-                                    <Fumi onChangeText={(text) => {this.setState({[item.campo]: text})}} label={item.name} iconClass={FontAwesomeIcon} iconName={item.icon} iconColor={Colors.tintColor} iconSize={20} iconWidth={40} inputPadding={16}/>
+                                    <Fumi onChangeText={(text) => {this.setState({[item.campo]: text})}} value={String(this.state[item.campo])} label={item.name} iconClass={FontAwesomeIcon} iconName={item.icon} iconColor={Colors.tintColor} iconSize={20} iconWidth={40} inputPadding={16}/>
                                 </View>
                     })
                 }
                 <View style={styles.modalGroupButtons}>
                     <Button onPress={this.props.toggle} title={'Cancelar'} style={styles.cancelarModal}/>
-                    <Button onPress={this.createEntrada} title={'Confirmar'} style={styles.confirmarModal}/>
+                    <Button onPress={this.doIt} title={this.props.item == null ? 'Gravar' : 'Atualizar'} style={styles.confirmarModal}/>
+                    
                 </View>
             </View>
         );

@@ -7,6 +7,7 @@ import {
     View,
     Button
   } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default class EntryItem extends React.Component {
 
@@ -15,20 +16,21 @@ export default class EntryItem extends React.Component {
     }
 
     componentDidMount(){
-        console.log(this.props.propitem);
         this.setState({item: this.props.propitem});
     }
-    
+
     render() {
         return (
-            <View style={styles.spreadsheet} key={this.props.index}>
-                <View style={styles.column}>
-                    <View style={styles.item}><Text>{this.state.item.entrada}</Text></View>
+            <TouchableOpacity onPress={this.props.onPress}>
+                <View style={styles.spreadsheet} key={this.state.item.id}>
+                    <View style={styles.column}>
+                        <View style={styles.item}><Text>{this.state.item.entrada}</Text></View>
+                    </View>
+                    <View style={styles.column}>
+                        <View style={styles.item}><Text>{this.state.item.tipo == 'debit' ? '- R$'+this.state.item.valor.toFixed(2) : '  R$'+this.state.item.valor.toFixed(2)}</Text></View>
+                    </View>
                 </View>
-                <View style={styles.column}>
-                    <View style={styles.item}><Text>{this.state.item.tipo == 'debit' ? '- R$'+this.state.item.valor.toFixed(2) : '  R$'+this.state.item.valor.toFixed(2)}</Text></View>
-                </View>
-            </View>    
+            </TouchableOpacity>
         )
     }    
 }

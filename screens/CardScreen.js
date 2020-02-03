@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import ActionButton from 'react-native-action-button';
-import { Icon, Header, Input } from 'react-native-elements';
+import { Icon, Header, Input, registerCustomIconType } from 'react-native-elements';
 import Colors from '../constants/Colors';
 import Months from '../components/Months';
 import EntryItem from '../components/EntryItem';
@@ -27,11 +27,9 @@ export default class CardScreen extends React.Component {
 
 			  
 	state = {
-		dataList: null,
+		dataList: [],
 		isVisible: false,
-		entrada: '',
-		valor: 0,
-		tipo: '',
+		item: null,
 		date: new Date()
 	};
 
@@ -44,21 +42,21 @@ export default class CardScreen extends React.Component {
 	}
 
 	callbackNewDate = (newDate) => {
-		console.log(newDate);
-		this.setState({date:newDate});
+		this.setState({date:newDate, dataList: []});
 		this.getData();
 	}
 	
 	formatDate(){
 		return monthName(this.state.date.getMonth() + 1) + '_' + this.state.date.getFullYear();
 	}
+
 	toggleModal = () => {
-		this.setState({ isModalVisible: !this.state.isModalVisible });
+		this.setState({ isVisible: !this.state.isVisible});
+		this.getData();
 	};
+
 	render(){
-		
-		const {dataList} = this.state;
-		
+				
 		return (
 		<View style={styles.container}>
 			<Months style={styles.months} callbackDate={this.callbackNewDate}/>
@@ -69,9 +67,9 @@ export default class CardScreen extends React.Component {
 					
 					<View >
 						{
-							dataList && dataList.map(
+							this.state.dataList && this.state.dataList.map(
 								(item,index) => {
-									return <EntryItem propitem={item} index={index}/>
+									return <EntryItem propitem={item} key={item.id+item.entrada+item.tipo+item.valor} onPress={() => {this.setState({item:item}); this.toggleModal()}}/>
 								}
 							)
 						}
@@ -79,20 +77,20 @@ export default class CardScreen extends React.Component {
 				</View>
 			</ScrollView>
 			<ActionButton buttonColor={Colors.actionButton}>
-				<ActionButton.Item buttonColor={Colors.actionButtonNovaEntrada} title="Nova entrada" onPress={() => this.toggleModal()}>
+				<ActionButton.Item buttonColor={Colors.actionButtonNovaEntrada} title="Nova entrada" onPress={() => {this.setState({item: null});this.toggleModal();}}>
 					<Icon name="attach-money" style={styles.actionButtonIcon} />
 				</ActionButton.Item>
 			</ActionButton>
 
 			<Modal 
-				isVisible={this.state.isModalVisible}
+				isVisible={this.state.isVisible}
 				onBackButtonPress={this.toggleModal}
 				onBackdropPress={this.toggleModal}
 				style={styles.containerModal}>
 
 				<View>
 
-					<Form fields={this.fields} toggle={this.toggleModal} date={this.state.date}/>
+					<Form item={this.state.item} fields={this.fields} toggle={this.toggleModal} date={this.state.date}/>
 				</View>
 			</Modal>
 		</View>
