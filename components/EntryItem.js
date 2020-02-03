@@ -21,7 +21,7 @@ export default class EntryItem extends React.Component {
 
     render() {
         return (
-            <TouchableOpacity onPress={this.props.onPress}>
+            <TouchableOpacity onPress={this.props.onPress} onLongPress={this.props.onLongPress}>
                 <View style={styles.spreadsheet} key={this.state.item.id}>
                     <View style={styles.column}>
                         <View style={styles.item}><Text>{this.state.item.entrada}</Text></View>

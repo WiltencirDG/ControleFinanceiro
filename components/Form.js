@@ -22,17 +22,15 @@ export default class Form extends Component{
 	};
 
 	doIt = () => {
-        console.log('Form: doIt');
         let tela = this.props.tela;
-        
-        if(this.props.item == null){
-            if(this.state.entrada != '' && this.state.tipo != ''){
+        if(this.state.entrada != '' && this.state.tipo != ''){
+            if(this.props.item == null){
                 FirebaseService.writeData(tela+'/'+this.formatDate(),this.state.entrada,parseFloat(this.state.valor),this.state.tipo, false);
+            }else{
+                FirebaseService.writeData(tela+'/'+this.formatDate()+'/'+this.props.item.id,this.state.entrada,parseFloat(this.state.valor),this.state.tipo, true);
             }
-        }else{
-            FirebaseService.writeData(tela+'/'+this.formatDate()+'/'+this.props.item.id,this.state.entrada,parseFloat(this.state.valor),this.state.tipo, true);
+            this.props.toggle?.();
         }
-        this.props.toggle?.();
     };
     
     formatDate(){
@@ -40,7 +38,6 @@ export default class Form extends Component{
 	}
 
     componentDidMount(){
-        console.log('Form: didMount: prop.item-> '+this.props.item);
         if(this.props.item != null){
             this.setState({entrada: this.props.item.entrada, valor: this.props.item.valor, tipo: this.props.item.tipo});
         }

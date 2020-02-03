@@ -24,7 +24,6 @@ export default class FirebaseService {
     }
 
     static writeData(path,entrada,valor,tipo, isUpdate){
-        console.log('FirebaseService: writeData -> ');
         if(!isUpdate){
             firebaseDatabase.ref(path).push({
                 entrada,
@@ -50,5 +49,15 @@ export default class FirebaseService {
                 console.log('error ' , error)
             })
         }
+    }
+
+    static removeData(path){
+        firebaseDatabase.ref(path).remove().then((data)=>{
+            //success callback
+            console.log('data ' , data)
+        }).catch((error)=>{
+            //error callback
+            console.log('error ' , error)
+        })
     }
 }

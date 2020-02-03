@@ -18,6 +18,7 @@ import Modal from "react-native-modal";
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Fumi } from 'react-native-textinput-effects';
 import monthName from '../utils/util';
+import Totalizer from '../components/Totalizer';
 
 export default class Entries extends React.Component {
 	
@@ -31,7 +32,8 @@ export default class Entries extends React.Component {
 		item: null,
 		type: '',
 		date: new Date(),
-		screen: this.props.navigation.state.routeName
+		screen: this.props.navigation.state.routeName,
+		updateTotal : false
 	};
 
 	componentDidMount() {
@@ -39,11 +41,15 @@ export default class Entries extends React.Component {
 	};
 
 	getData = () => {
-		FirebaseService.getData(this.state.screen+'/'+this.formatDate(), dataIn => this.setState({dataList: dataIn}));
+		FirebaseService.getData(this.state.screen+'/'+this.formatDate(), dataIn => {this.setState({dataList: dataIn});this.toggleUpdater();});
+	}
+
+	deleteEntry = () => {
+		FirebaseService.removeData(this.state.screen+'/'+this.formatDate()+'/'+this.state.item.id);
 	}
 
 	callbackNewDate = (newDate) => {
-		this.setState({date:newDate, dataList: []});
+		this.setState({date:newDate, dataList: [], updateTotal: !this.state.updateTotal});
 		this.getData();
 	}
 	
@@ -55,6 +61,10 @@ export default class Entries extends React.Component {
 		this.setState({ isVisible: !this.state.isVisible});
 		this.getData();
 	};
+
+	toggleUpdater = () => {
+		this.setState({ updateTotal: !this.state.updateTotal});
+	}
 
 	render(){
 				
@@ -70,7 +80,7 @@ export default class Entries extends React.Component {
 						{
 							this.state.dataList && this.state.dataList.map(
 								(item,index) => {
-									return <EntryItem propitem={item} key={item.id+item.entrada+item.tipo+item.valor} onPress={() => {this.setState({item:item}); this.toggleModal()}}/>
+									return <EntryItem propitem={item} key={item.id+item.entrada+item.tipo+item.valor} onPress={() => {this.setState({item:item}); this.toggleModal()}} onLongPress={()=>{this.setState({item:item}); this.deleteEntry()}}/>
 								}
 							)
 						}
@@ -97,6 +107,8 @@ export default class Entries extends React.Component {
 					<Form item={this.state.item} tipo={this.state.type} fields={this.fields} toggle={this.toggleModal} date={this.state.date} tela={this.state.screen}/>
 				</View>
 			</Modal>
+
+			<Totalizer updateTotal={this.state.updateTotal} listValues={this.state.dataList}/>
 		</View>
 		  
 		);
@@ -111,7 +123,7 @@ function myHeader(){
 	return (
 	<Header
 		containerStyle={{
-		backgroundColor: Colors.tintColor,
+			backgroundColor: Colors.tintColor,
 		}}
 		placement="left"
 		leftComponent={{ icon: 'menu', color: '#fff' }}
